@@ -1,1 +1,1 @@
-# browser-common-lib
+# A common library for scripting
