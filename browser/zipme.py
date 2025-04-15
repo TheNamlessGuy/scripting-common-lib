@@ -1,26 +1,32 @@
 #!/usr/bin/python3
 
 import os
+import sys
 import json
 import subprocess
 
-common_root = subprocess.run(['git', 'rev-parse', '--show-toplevel'], stdout = subprocess.PIPE, cwd = os.path.dirname(os.path.realpath(__file__))).stdout.decode('utf-8').strip()
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))) # Fuck you python, you terrible fucking language
+
+from python import files
+from python import git
+from python import input
+
+common_root = git.repo_root(cwd = files.cwd(for_path = __file__))
 plugin_root = os.path.dirname(common_root)
-filename = os.path.join(plugin_root, os.path.basename(plugin_root) + '.zip')
+rel_filename = os.path.basename(plugin_root) + '.zip'
+filename = os.path.join(plugin_root, rel_filename)
 if os.path.exists(filename):
   if not os.path.isfile(filename):
     print("'{0}' exists but isn't a file. Unsure how to proceed")
     exit(1)
 
-  while True:
-    response = input("'{0}' already exists. Should it be removed? [y/n] ".format(filename))
-    if response == 'y':
-      print("Removing file '{0}'...".format(filename))
-      os.remove(filename)
-      break
-    elif response == 'n':
-      print("Cannot continue while old file still exists")
-      exit(0)
+  shouldRemove = input.confirm("'{0}' already exists. Should it be removed?".format(rel_filename))
+  if shouldRemove:
+    print("Removing file '{0}'...".format(rel_filename))
+    os.remove(filename)
+  else:
+    print("Cannot continue while old file still exists")
+    exit(0)
 
 files = [
   os.path.join(plugin_root, 'res'),
@@ -36,5 +42,5 @@ with open(os.path.join(plugin_root, 'manifest.json'), 'r') as f:
 
 files = [os.path.relpath(x, plugin_root) for x in files]
 
-print("Creating file '{0}'...".format(filename))
+print("Creating file '{0}'...".format(rel_filename))
 subprocess.run(['zip', '-r', '-q', filename] + files, cwd = plugin_root)

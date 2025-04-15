@@ -3,6 +3,13 @@ import os
 from . import print
 from . import input
 
+def cwd(*, for_path = None):
+  if for_path is None:
+    return os.getcwd()
+
+  for_path = os.path.realpath(for_path)
+  return for_path if not os.path.isfile(for_path) else os.path.dirname(for_path)
+
 def validate_paths(paths, *, filled = False):
   if not isinstance(paths, list): paths = [paths]
 
