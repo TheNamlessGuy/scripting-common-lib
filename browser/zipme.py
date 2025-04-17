@@ -35,10 +35,16 @@ files = [
 ]
 
 with open(os.path.join(plugin_root, 'manifest.json'), 'r') as f:
-  common_scripts = json.loads(f.read())
-  common_scripts = [os.path.join(plugin_root, x) for x in common_scripts['background']['scripts']]
-  common_scripts = [x for x in common_scripts if x.startswith(common_root)]
-  files += common_scripts
+  manifest = json.loads(f.read())
+
+  if 'background' in manifest and 'scripts' in manifest['background']:
+    common_scripts = [os.path.join(plugin_root, x) for x in manifest['background']['scripts']]
+    common_scripts = [x for x in common_scripts if x.startswith(common_root)]
+    files += common_scripts
+
+  if 'browser_specific_settings' in manifest and 'namless' in manifest['browser_specific_settings'] and 'common_foreground' in manifest['browser_specific_settings']['namless']:
+    common_foreground_root = os.path.join(common_root, 'browser', 'foreground')
+    files += [os.path.join(common_foreground_root, x) for x in manifest['browser_specific_settings']['namless']['common_foreground']]
 
 files = [os.path.relpath(x, plugin_root) for x in files]
 
