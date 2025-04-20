@@ -157,10 +157,10 @@ class BaseOptions {
 
     let json = '';
     for (const bookmark of bookmarks) {
-      json += decodeURIComponent(new URL(bookmark.url).searchParams.get('d'));
+      json += new URL(bookmark.url).searchParams.get('d');
     }
 
-    return JSON.parse(json);
+    return JSON.parse(decodeURIComponent(json));
   }
 
   /**
