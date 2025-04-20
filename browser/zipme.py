@@ -42,11 +42,18 @@ with open(os.path.join(plugin_root, 'manifest.json'), 'r') as f:
     common_scripts = [x for x in common_scripts if x.startswith(common_root)]
     files += common_scripts
 
-  if 'browser_specific_settings' in manifest and 'namless' in manifest['browser_specific_settings'] and 'common_foreground' in manifest['browser_specific_settings']['namless']:
-    common_foreground_root = os.path.join(common_root, 'browser', 'foreground')
-    files += [os.path.join(common_foreground_root, x) for x in manifest['browser_specific_settings']['namless']['common_foreground']]
+  if 'browser_specific_settings' in manifest and 'namless' in manifest['browser_specific_settings'] and 'common_includes' in manifest['browser_specific_settings']['namless']:
+    files += [os.path.join(common_root, x) for x in manifest['browser_specific_settings']['namless']['common_includes']]
+
+# Just in case
+fail = False
+for file in files:
+  if not os.path.exists(file):
+    print("'{0}' does not exist".format(file))
+    fail = True
+if fail:
+  exit(1)
 
 files = [os.path.relpath(x, plugin_root) for x in files]
-
 print("Creating file '{0}'...".format(rel_filename))
 subprocess.run(['zip', '-r', '-q', filename] + files, cwd = plugin_root)
