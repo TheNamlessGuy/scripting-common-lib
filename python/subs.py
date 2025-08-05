@@ -59,10 +59,21 @@ def get_language_and_title_from_sub_file(subfile, videofile, *, default_lang = N
     data = data[1:]
   data = data.split('.')
 
-  return [
-    data[0] if len(data[0]) > 0 else default_lang,
-    data[1] if len(data) > 1 else default_title,
-  ]
+  if len(data[0]) > 0:
+    lang = data[0]
+  elif default_lang is not None:
+    lang = default_lang
+  else:
+    lang = ''
+
+  if len(data) > 1 and len(data[1]) > 0:
+    title = data[1]
+  elif default_title is not None:
+    title = default_title
+  else:
+    title = ''
+
+  return [lang, title]
 
 def get_streams_from(file, *, whitelisted_languages = None):
   retval = []

@@ -24,6 +24,8 @@ def listdir(path):
   return [os.path.join(path, x) for x in os.listdir(path)]
 
 def process_files(paths, processing_function, *, _toplevel = True, autoresponse = None, is_valid = lambda x: True):
+  paths.sort()
+
   for path in paths:
     if os.path.isfile(path):
       if not is_valid(path):
